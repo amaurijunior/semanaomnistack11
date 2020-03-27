@@ -6,18 +6,19 @@ module.exports = {
 
     async index(request,response){
 
+        const {page = 1} = request.query;
         const [count] = await connection('incidents').count();
 
-        console.log(count);
+        //console.log(count);
 
-        const {page = 1} = request.query;
+        
         const incs = await connection('incidents')
         .join('ongs','ongs.id','=','incidents.ong_id')
         .limit(5)
         .offset((page-1)*5)
-        .select(['incidents.*','ongs.name','ongs.city','ongs.whats','ongs.email']);
+        .select(['incidents.*','ongs.name','ongs.city','ongs.uf','ongs.whats','ongs.email']);
 
-        response.header('X-total-count',count['count(*)']);
+        response.header('X-total-count',(count['count(*)'])-17);
 
 
         return response.json(incs);
